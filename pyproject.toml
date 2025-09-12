@@ -9,7 +9,7 @@ description = "A tool for checking and completing BibTeX files using DOI and arX
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "Xu He", email = "mailhexu@gmail.com"},
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
