@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bibcheck"
+version = "0.1.0"
+description = "A tool for checking and completing BibTeX files using DOI and arXiv entries"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Markup :: LaTeX",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "bibtexparser>=1.4.0",
+    "requests>=2.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mailhexu/bibcheck"
+"Bug Tracker" = "https://github.com/mailhexu/bibcheck/issues"
+
+[project.scripts]
+bibcheck = "bibcheck.bibcheck:main"

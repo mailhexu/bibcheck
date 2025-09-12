@@ -1,0 +1,13 @@
+{
+    "fields_to_check": {
+        "title": false,
+        "journal": false,
+        "year": true,
+        "volume": true,
+        "number": true,
+        "pages": true,
+        "doi": true,
+        "author":false 
+    },
+    "check_missing_only": false
+}
