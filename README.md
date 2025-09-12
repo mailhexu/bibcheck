@@ -33,7 +33,7 @@ pip install bibcheck
 Or install from source:
 
 ```bash
-git clone https://github.com/yourusername/bibcheck.git
+git clone https://github.com/mailhexu/bibcheck.git
 cd bibcheck
 pip install .
 ```
