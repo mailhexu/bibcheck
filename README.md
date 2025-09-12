@@ -90,4 +90,4 @@ Then edit the `config.json` file to enable or disable specific fields:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.# bibcheck
+This project is licensed under the MIT License - see the LICENSE file for details.
