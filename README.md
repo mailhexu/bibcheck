@@ -23,6 +23,7 @@ BibCheck is a Python tool that helps improve the quality of BibTeX files by fetc
 - Immediate reporting of issues after checking each entry
 - Preserves original entries (only fixes mismatches and adds missing fields)
 - Note: Entry and field order may be changed due to bibtexparser limitations
+- Informs users when entries have no DOI or arXiv identifiers
 
 ## Installation
 
