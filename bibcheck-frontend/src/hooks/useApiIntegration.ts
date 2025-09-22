@@ -209,19 +209,24 @@ export function useApiIntegration() {
                 continue;
               }
 
-              // Check for auto-accept configuration
-              const shouldAutoAccept = config?.autoAcceptChanges;
-              console.log(`🔄 Auto-accept for ${key}:`, shouldAutoAccept);
-              
-              if (shouldAutoAccept) {
+              // Check if this field should be auto-accepted based on config
+              if (config?.autoAcceptChanges) {
                 // Auto-accept the DOI value
                 console.log(`✅ Auto-accepting DOI value for ${key}`);
                 updatedEntry.fields[key] = doiValue;
                 entryChanges.push(key);
                 if (!changeSource) changeSource = "doi";
+                
+                // Add as an auto-accepted conflict (for tracking purposes)
+                entryConflicts.push({
+                  field: key,
+                  originalValue,
+                  doiValue,
+                  accepted: true  // Mark as already accepted
+                });
               } else {
-                // Add as a conflict for user decision
-                console.log(`⚠️ Adding conflict for ${key}`);
+                // Add as a pending conflict for user decision
+                console.log(`⚠️ Adding pending conflict for ${key}`);
                 entryConflicts.push({
                   field: key,
                   originalValue,
@@ -415,14 +420,32 @@ export function useApiIntegration() {
               console.log(`⚠️ Field ${key} not enabled for validation, skipping conflict`);
               continue;
             }
-            
-            console.log(`✅ Adding conflict for ${key}`);
-            entryConflicts.push({
-              field: key,
-              originalValue,
-              doiValue,
-              accepted: false // User hasn't decided yet
-            });
+
+            // Check if this field should be auto-accepted based on config
+            if (config?.autoAcceptChanges) {
+              // Auto-accept the DOI value
+              console.log(`✅ Auto-accepting DOI value for ${key}`);
+              updatedEntry.fields[key] = doiValue;
+              entryChanges.push(key);
+              if (!changeSource) changeSource = "doi";
+              
+              // Add as an auto-accepted conflict (for tracking purposes)
+              entryConflicts.push({
+                field: key,
+                originalValue,
+                doiValue,
+                accepted: true  // Mark as already accepted
+              });
+            } else {
+              // Add as a pending conflict for user decision
+              console.log(`⚠️ Adding pending conflict for ${key}`);
+              entryConflicts.push({
+                field: key,
+                originalValue,
+                doiValue,
+                accepted: false
+              });
+            }
           } else if (!originalValue) {
             // Field missing - add it
             console.log(`Adding missing field ${key}: "${doiValue}"`);

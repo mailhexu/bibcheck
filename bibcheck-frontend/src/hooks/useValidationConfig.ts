@@ -21,15 +21,15 @@ export interface ValidationConfigHook {
 }
 
 const defaultConfig: ValidationConfig = {
-  author: true,
-  title: true,
+  author: false,  // Disabled by default
+  title: false,   // Disabled by default
   journal: true,
   year: true,
   volume: true,
   number: true,
   pages: true,
   doi: true,
-  autoAcceptChanges: false // Default to false for safety
+  autoAcceptChanges: true // Default to true for auto-accept
 };
 
 export function useValidationConfig(): ValidationConfigHook {
