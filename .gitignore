@@ -1,5 +1,9 @@
 doc/refs/*.pdf
 
+.bmad-core
+.clinerules
+
+
 # Latex 
 *.aux
 
