@@ -1,18 +1,23 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import RestoreIcon from '@mui/icons-material/Restore';
 
 interface FieldDiffProps {
   originalValue: string;
   correctedValue: string;
   fieldName: string;
+  onAccept?: () => void;
+  onRevert?: () => void;
 }
 
 const FieldDiff: React.FC<FieldDiffProps> = ({
   originalValue,
   correctedValue,
-  fieldName
+  fieldName,
+  onAccept,
+  onRevert
 }) => {
-  // Simple diff: show original with strikethrough and corrected in green
   return (
     <Box sx={{ mb: 2 }}>
       <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
@@ -43,6 +48,27 @@ const FieldDiff: React.FC<FieldDiffProps> = ({
           >
             Corrected: {correctedValue}
           </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+          <Button
+            size="small"
+            variant="contained"
+            color="success"
+            onClick={onAccept}
+            startIcon={<CheckIcon />}
+          >
+            Accept
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="warning"
+            onClick={onRevert}
+            startIcon={<RestoreIcon />}
+          >
+            Revert
+          </Button>
         </Box>
       </Box>
     </Box>

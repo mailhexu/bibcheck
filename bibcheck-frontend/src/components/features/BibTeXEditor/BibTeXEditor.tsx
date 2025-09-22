@@ -22,6 +22,7 @@ type BibTeXEditorProps = {
   conflicts?: EntryConflicts;
   onAcceptCorrection?: (entryId: string, field: string, doiValue: string) => void;
   onRejectCorrection?: (entryId: string, field: string) => void;
+  onRevertField?: (entry: BibTeXEntry, field: string) => void;
   onFetchEntryFields?: (entry: BibTeXEntry) => void;
   onValidateEntry?: (entry: BibTeXEntry) => void;
   processingEntries?: Set<string>;
@@ -35,6 +36,7 @@ const BibTeXEditor: React.FC<BibTeXEditorProps> = ({
   conflicts,
   onAcceptCorrection,
   onRejectCorrection,
+  onRevertField,
   onFetchEntryFields,
   onValidateEntry,
   processingEntries
@@ -145,34 +147,14 @@ const BibTeXEditor: React.FC<BibTeXEditorProps> = ({
                     <strong>Data conflicts detected with DOI.org:</strong>
                   </Typography>
                   {entryConflicts.map(conflict => (
-                    <Box key={conflict.field} sx={{ mb: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        {conflict.field}:
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'error.main', textDecoration: 'line-through' }}>
-                        Current: {conflict.originalValue}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'success.main' }}>
-                        DOI.org: {conflict.doiValue}
-                      </Typography>
-                      {!conflict.accepted && (
-                        <ButtonGroup size="small" sx={{ mt: 1 }}>
-                          <Button
-                            onClick={() => onAcceptCorrection?.(entry.id, conflict.field, conflict.doiValue)}
-                            color="success"
-                            variant="outlined"
-                          >
-                            Accept DOI.org
-                          </Button>
-                          <Button
-                            onClick={() => onRejectCorrection?.(entry.id, conflict.field)}
-                            color="error"
-                            variant="outlined"
-                          >
-                            Keep Current
-                          </Button>
-                        </ButtonGroup>
-                      )}
+                    <Box key={conflict.field}>
+                      <FieldDiff
+                        fieldName={conflict.field}
+                        originalValue={conflict.originalValue}
+                        correctedValue={conflict.doiValue}
+                        onAccept={() => onAcceptCorrection?.(entry.id, conflict.field, conflict.doiValue)}
+                        onRevert={() => onRevertField?.(entry, conflict.field)}
+                      />
                       {conflict.accepted && (
                         <Chip label="Accepted" color="success" size="small" sx={{ mt: 1 }} />
                       )}

@@ -8,7 +8,7 @@ import ApiError from "./components/features/ApiError/ApiError";
 import DownloadBibTeX from "./components/features/DownloadBibTeX/DownloadBibTeX";
 import { useValidation } from "./hooks/useValidation";
 import { useValidationConfig } from "./hooks/useValidationConfig";
-import { useApiIntegration, ApiProgress, EntryConflicts, FieldConflict } from "./hooks/useApiIntegration";
+import { useApiIntegration, ApiProgress, EntryConflicts } from "./hooks/useApiIntegration";
 import type { BibTeXEntry } from "./hooks/useBibTeXParser";
 import type { ValidationResult } from "./hooks/useValidation";
 
@@ -16,7 +16,7 @@ function App() {
   const [entries, setEntries] = useState<BibTeXEntry[]>([]);
   const [originalEntries, setOriginalEntries] = useState<BibTeXEntry[]>([]);
   const { validateEntries } = useValidation();
-  const { fetchMissingFields, fetchMissingFieldsForEntry, loading, error, progress } = useApiIntegration();
+  const { fetchMissingFields, fetchMissingFieldsForEntry, restoreOriginalField, loading, error, progress } = useApiIntegration();
   const { getEnabledFields, config } = useValidationConfig();
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
   const [apiChanges, setApiChanges] = useState<Record<string, { fields: string[]; source: string }>>({});
@@ -103,6 +103,55 @@ function App() {
     });
   };
 
+  const handleRevertField = (entry: BibTeXEntry, field: string) => {
+    // Get the original value
+    const originalValue = restoreOriginalField(entry, field);
+    if (originalValue === undefined) {
+      console.warn(`No original value found for ${entry.id}.${field}`);
+      return;
+    }
+
+    // Update the entry with the original value
+    setEntries(currentEntries => {
+      return currentEntries.map(currentEntry => {
+        if (currentEntry.id === entry.id) {
+          return {
+            ...currentEntry,
+            fields: {
+              ...currentEntry.fields,
+              [field]: originalValue
+            }
+          };
+        }
+        return currentEntry;
+      });
+    });
+
+    // Remove the conflict
+    setConflicts(currentConflicts => {
+      const entryConflicts = currentConflicts[entry.id];
+      if (entryConflicts) {
+        const updatedConflicts = entryConflicts.filter(conflict => conflict.field !== field);
+        if (updatedConflicts.length === 0) {
+          const { [entry.id]: _, ...rest } = currentConflicts;
+          return rest;
+        }
+        return {
+          ...currentConflicts,
+          [entry.id]: updatedConflicts
+        };
+      }
+      return currentConflicts;
+    });
+
+    // Re-validate after revert
+    setEntries(currentEntries => {
+      const results = validateEntries(currentEntries);
+      setValidationResults(results);
+      return currentEntries;
+    });
+  };
+
   const handleRejectCorrection = (entryId: string, field: string) => {
     // Mark conflict as rejected (keep original value)
     setConflicts(currentConflicts => {
@@ -122,6 +171,7 @@ function App() {
     });
   };
 
+  // Rest of the existing functions...
   const handleFetchMissingFields = async () => {
     const enabledFields = getEnabledFields();
     const { updatedEntries, changes, conflicts: resultConflicts } = await fetchMissingFields(originalEntries, handleProgress, enabledFields, config);
@@ -358,6 +408,7 @@ function App() {
                 conflicts={conflicts}
                 onAcceptCorrection={handleAcceptCorrection}
                 onRejectCorrection={handleRejectCorrection}
+                onRevertField={handleRevertField}
                 onFetchEntryFields={handleFetchEntryFields}
                 onValidateEntry={handleValidateEntry}
                 processingEntries={processingEntries}
